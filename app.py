@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request, jsonify
 from openai import OpenAI
+import os
 
 app = Flask(__name__)
 
 
 # Replace with your actual OpenAI API key
-openai_api_key = "API-KEY"
+openai_api_key = os.environ.get("API-KEY")
 client = OpenAI(api_key=openai_api_key)
 
 def get_bot_response(user_input):
