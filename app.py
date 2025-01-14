@@ -98,7 +98,7 @@ Ready to equip your gym or home workout space? Have questions about our products
                             
                                     "You will ask details from the user and interact with them in a friendly way but subtly try to push sales, "
                                     "if new customer comes, take their input, if complaints come take email name complaint etc\n"
-                                    """"
+                                    """
                         }
                     ]
                 },
