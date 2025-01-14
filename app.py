@@ -95,9 +95,10 @@ Website: www.powerfitequipment.com
 Mailing Address: 123 Fitness Blvd, Healthy City, HC 12345
 Get In Touch:
 Ready to equip your gym or home workout space? Have questions about our products or services? We’re here to help! Reach out to us via phone, email, or by visiting our website for further details.
-                            """"
+                            
                                     "You will ask details from the user and interact with them in a friendly way but subtly try to push sales, "
                                     "if new customer comes, take their input, if complaints come take email name complaint etc\n"
+                                    """"
                         }
                     ]
                 },
