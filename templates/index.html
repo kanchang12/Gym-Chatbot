@@ -420,80 +420,87 @@
         </div>
     </div>
     </div>
-function toggleChat() {
-    const chatWindow = document.getElementById('chatWindow');
-    chatWindow.style.display = chatWindow.style.display === 'none' ? 'flex' : 'none';
-}
 
-const chatMessages = document.getElementById('chatMessages');
-const chatInput = document.getElementById('chatInput');
-const chatSend = document.querySelector('.chat-send');
-const calendarIframeContainer = document.getElementById('calendar-iframe-container');
-const zohoIframeContainer = document.getElementById('zoho-iframe-container');
-const calendarIframe = document.getElementById('calendar-iframe'); // Get iframe elements
-const zohoIframe = document.getElementById('zoho-iframe');     // Get iframe elements
+    <script>
+    // Ensure the DOM is fully loaded before executing JavaScript
+    document.addEventListener("DOMContentLoaded", function () {
+        const chatButton = document.querySelector(".chat-button");
+        const chatWindow = document.getElementById('chatWindow');
+        
+        // Toggle chat window visibility
+        chatButton.addEventListener("click", function () {
+            chatWindow.style.display = chatWindow.style.display === 'none' ? 'flex' : 'none';
+        });
 
-chatSend.addEventListener('click', sendMessage);
-chatInput.addEventListener('keyup', function(event) {
-    if (event.key === 'Enter') {
-        sendMessage();
-    }
-});
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const chatSend = document.querySelector('.chat-send');
+        const calendarIframeContainer = document.getElementById('calendar-iframe-container');
+        const zohoIframeContainer = document.getElementById('zoho-iframe-container');
 
-function sendMessage() {
-    const message = chatInput.value;
-    if (message.trim() !== "") {
-        displayMessage(message, 'user');
-        chatInput.value = '';
-
-        fetch('/chat', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: 'message=' + encodeURIComponent(message)
-        })
-        .then(response => response.json())
-        .then(data => {
-            const botResponse = data.response;
-            displayMessage(botResponse, 'bot');
-
-            // Check for iframe keywords *after* displaying the bot's message
-            if (botResponse.includes("https://calendar.google.com")) {
-                calendarIframeContainer.style.display = 'block';
-                zohoIframeContainer.style.display = 'none';
-            } else if (botResponse.includes("https://forms.zohopublic.in")) {
-                zohoIframeContainer.style.display = 'block';
-                calendarIframeContainer.style.display = 'none';
-            } else {
-                calendarIframeContainer.style.display = 'none';
-                zohoIframeContainer.style.display = 'none';
+        chatSend.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
             }
         });
-    }
-}
 
-function displayMessage(message, sender) {
-    const messageDiv = document.createElement('div');
-    messageDiv.classList.add('message', sender + '-message');
+        function sendMessage() {
+            const message = chatInput.value;
+            if (message.trim() !== "") {
+                displayMessage(message, 'user');
+                chatInput.value = '';
 
-    // Handle multi-line messages (important!)
-    message.split('\n').forEach((line, index) => {
-        if (index > 0) messageDiv.appendChild(document.createElement('br'));
-        messageDiv.appendChild(document.createTextNode(line));
+                fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: 'message=' + encodeURIComponent(message)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const botResponse = data.response;
+                    displayMessage(botResponse, 'bot');
+
+                    // Check for iframe keywords *after* displaying the bot's message
+                    if (botResponse.includes("https://calendar.google.com")) {
+                        calendarIframeContainer.style.display = 'block';
+                        zohoIframeContainer.style.display = 'none';
+                    } else if (botResponse.includes("https://forms.zohopublic.in")) {
+                        zohoIframeContainer.style.display = 'block';
+                        calendarIframeContainer.style.display = 'none';
+                    } else {
+                        calendarIframeContainer.style.display = 'none';
+                        zohoIframeContainer.style.display = 'none';
+                    }
+                });
+            }
+        }
+
+        function displayMessage(message, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender + '-message');
+
+            // Handle multi-line messages (important!)
+            message.split('\n').forEach((line, index) => {
+                if (index > 0) messageDiv.appendChild(document.createElement('br'));
+                messageDiv.appendChild(document.createTextNode(line));
+            });
+
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Event listener for enter key in chat input (only once)
+        chatInput.addEventListener('keypress', function(event) { // Corrected
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent form submission
+                sendMessage();
+            }
+        });
     });
-
-    chatMessages.appendChild(messageDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-// Event listener for enter key in chat input (only once)
-chatInput.addEventListener('keypress', function(event) { // Corrected
-    if (event.key === 'Enter') {
-        event.preventDefault(); // Prevent form submission
-        sendMessage();
-    }
-});
+</script>
 
 </body>
 </html>
