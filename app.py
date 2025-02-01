@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect
 from openai import OpenAI
 import os
 import requests
@@ -6,14 +6,17 @@ import requests
 app = Flask(__name__)
 
 # Replace with your actual OpenAI API key
-openai_api_key = os.environ.get("API-KEY")
+openai_api_key = os.environ.get("API_KEY")
 client = OpenAI(api_key=openai_api_key)
 
 zapier_webhook_url = os.environ.get("ZAPIER_WEBHOOK_URL")
 
-# Zoho CRM details
-ZOHO_ACCESS_TOKEN = os.environ.get('ZOHO_ACCESS_TOKEN')
+# Zoho CRM OAuth details
+ZOHO_CLIENT_ID = os.environ.get("ZOHO_CLIENT_ID")
+ZOHO_CLIENT_SECRET = os.environ.get("ZOHO_CLIENT_SECRET")
+ZOHO_REDIRECT_URI = os.environ.get("ZOHO_REDIRECT_URI")
 
+# Function to get the bot response from OpenAI
 def get_bot_response(user_input):
     response = client.chat.completions.create(
         model="gpt-4",  # You can choose a different model if needed
@@ -41,54 +44,15 @@ def get_bot_response(user_input):
         temperature=0.7,
     )
     bot_response = response.choices[0].message.content
-
-    # Google Calendar Scheduling
-    if "SCHEDULE_REQUEST|" in bot_response:
-        parts = bot_response.split("|")
-        if len(parts) == 6:
-            success = schedule_appointment(parts[1], parts[2], parts[3], parts[4], parts[5])
-            if success:
-                return f"Great! I've scheduled your appointment for {parts[3]} at {parts[4]}. You'll receive a confirmation email shortly."
-            else:
-                return "I apologize, but there was an issue scheduling your appointment. Please try again or contact us directly."
-
-    # Google Calendar iframe for booking
-    elif any(keyword in user_input.lower() for keyword in ["schedule", "appointment", "book time", "google calendar"]):
-        return '''
-            Sure! You can book an appointment using our Google Calendar: 
-            <br><br>
-            <iframe src="https://calendar.google.com/calendar/embed?src=kanchan.g12%40gmail.com&ctz=Europe%2FLondon" 
-                    style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
-            <br><br>
-            Please select a time slot and confirm your booking.
-        '''
-    
-    # Zoho CRM Inquiry Handling (for product inquiries)
-    elif any(keyword in user_input.lower() for keyword in ["buy", "purchase", "pricing", "cost", "quote", "order", "product details", "sales inquiry"]):
-        bot_response += "\n\nTo assist you better, please provide your **Name, Email, and Phone Number**. We'll get back to you with details."
-
     return bot_response
 
-def schedule_appointment(name, email, date, time, service_type):
-    try:
-        payload = {
-            "name": name,
-            "email": email,
-            "date": date,
-            "time": time,
-            "service_type": service_type
-        }
-        response = requests.post(zapier_webhook_url, json=payload)
-        return response.status_code == 200
-    except Exception as e:
-        print(f"Scheduling Error: {e}")
-        return False
-
+# Function to send data to Zoho CRM (e.g., for sales inquiries)
 def send_to_zoho_crm(name, email, phone, inquiry):
     try:
         zoho_crm_url = "https://www.zohoapis.com/crm/v2/Leads"
+        access_token = os.environ.get("ZOHO_ACCESS_TOKEN")  # Ensure the access token is available
         headers = {
-            "Authorization": f"Zoho-oauthtoken {ZOHO_ACCESS_TOKEN}",
+            "Authorization": f"Zoho-oauthtoken {access_token}",
             "Content-Type": "application/json"
         }
         payload = {
@@ -107,6 +71,7 @@ def send_to_zoho_crm(name, email, phone, inquiry):
         print(f"Zoho CRM Error: {e}")
         return False
 
+# Route to handle user messages
 @app.route('/chat', methods=['POST'])
 def chat():
     user_message = request.form['message']
@@ -124,30 +89,26 @@ def chat():
 
     return jsonify({'response': bot_response})
 
+# Route to redirect user to Zoho OAuth authorization page
 @app.route('/zoho_oauth_redirect')
 def zoho_oauth_redirect():
-    zoho_client_id = os.environ.get('ZOHO_CLIENT_ID')
-    zoho_redirect_uri = os.environ.get('ZOHO_REDIRECT_URI')
-    zoho_oauth_url = f"https://accounts.zoho.com/oauth/v2/auth?scope=ZohoCRM.modules.leads.CREATE&client_id={zoho_client_id}&response_type=code&access_type=offline&redirect_uri={zoho_redirect_uri}"
+    zoho_oauth_url = f"https://accounts.zoho.com/oauth/v2/auth?scope=ZohoCRM.modules.leads.CREATE&client_id={ZOHO_CLIENT_ID}&response_type=code&access_type=offline&redirect_uri={ZOHO_REDIRECT_URI}"
     return redirect(zoho_oauth_url)
 
+# Route to handle Zoho OAuth callback
 @app.route('/auth/zoho/callback')
 def zoho_callback():
-    code = request.args.get('code')
-    client_id = os.environ.get('ZOHO_CLIENT_ID')
-    client_secret = os.environ.get('ZOHO_CLIENT_SECRET')
-    redirect_uri = os.environ.get('ZOHO_REDIRECT_URI')
-
-    # Make a request to get the access token
+    code = request.args.get('code')  # Get the authorization code
     token_url = "https://accounts.zoho.com/oauth/v2/token"
     token_data = {
-        "client_id": client_id,
-        "client_secret": client_secret,
+        "client_id": ZOHO_CLIENT_ID,
+        "client_secret": ZOHO_CLIENT_SECRET,
         "grant_type": "authorization_code",
-        "redirect_uri": redirect_uri,
+        "redirect_uri": ZOHO_REDIRECT_URI,
         "code": code
     }
 
+    # Make a request to get the access token
     response = requests.post(token_url, data=token_data)
 
     if response.status_code == 200:
@@ -155,6 +116,8 @@ def zoho_callback():
         refresh_token = response.json()['refresh_token']
 
         # Save access_token and refresh_token securely
+        # Don't store tokens in environment variables for production
+        # Example: save to a database or secure storage
         os.environ['ZOHO_ACCESS_TOKEN'] = access_token
         os.environ['ZOHO_REFRESH_TOKEN'] = refresh_token
 
