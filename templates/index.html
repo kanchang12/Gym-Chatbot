@@ -65,56 +65,6 @@
             color: white;
         }
 
-        .about-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .service-card {
-            border: 1px solid #ddd;
-            padding: 1.5rem;
-            border-radius: 8px;
-            text-align: center;
-            background-color: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .product-card {
-            border: 1px solid #ddd;
-            padding: 1rem;
-            border-radius: 8px;
-            text-align: center;
-            background-color: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .product-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-        }
-
         .chat-widget {
             position: fixed;
             bottom: 20px;
@@ -207,46 +157,6 @@
             margin-right: auto;
         }
 
-        .contact-content {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            background-color: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        input, textarea {
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        button {
-            background-color: #333;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #555;
-        }
-
-        footer {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 2rem;
-        }
     </style>
 </head>
 <body>
@@ -261,190 +171,63 @@
     </nav>
 
     <section id="home">
-        <h1>PowerFit Equipment Co.</h1>
-        <p>Your Partner in Fitness Excellence Since 1995</p>
+        <h1>Welcome to PowerFit Equipment Co.</h1>
     </section>
-
-    <section id="about">
-        <h2>About Us</h2>
-        <div class="about-content">
-            <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Modern Gym Equipment" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;">
-            <div>
-                <h3>Our Story</h3>
-                <p>Founded in 1995, PowerFit Equipment Co. has been at the forefront of fitness innovation for over 25 years. What started as a small family-owned business has grown into one of the most trusted names in fitness equipment manufacturing.</p>
-                <h3>Our Mission</h3>
-                <p>We strive to provide high-quality, innovative fitness equipment that helps people achieve their health and wellness goals. Our commitment to excellence, durability, and customer satisfaction sets us apart in the industry.</p>
-                <h3>Our Values</h3>
-                <p>Quality, Innovation, Integrity, and Customer Focus drive everything we do at PowerFit Equipment Co.</p>
-            </div>
-        </div>
-    </section>
-
-    <section id="services" style="background-color: #f5f5f5;">
-        <h2>Our Services</h2>
-        <div class="services-grid">
-            <div class="service-card">
-                <img src="https://images.unsplash.com/photo-1507398941214-572c25f4b1dc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGd5bSUyMGltYWdlc3xlbnwwfHwwfHx8MA%3D%3D" alt="Equipment Installation" style="width: 100%; height: 200px; object-fit: cover; border-radius: 4px; margin-bottom: 1rem;">
-                <h3>Equipment Installation</h3>
-                <p>Professional installation of all fitness equipment by our certified technicians.</p>
-            </div>
-            <div class="service-card">
-                <img src="https://images.unsplash.com/photo-1507398941214-572c25f4b1dc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGd5bSUyMGltYWdlc3xlbnwwfHwwfHx8MA%3D%3D" alt="Maintenance & Repair" style="width: 100%; height: 200px; object-fit: cover; border-radius: 4px; margin-bottom: 1rem;">
-                <h3>Maintenance & Repair</h3>
-                <p>Regular maintenance and prompt repair services to keep your equipment in top condition.</p>
-            </div>
-            <div class="service-card">
-                <img src="https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fGd5bSUyMGltYWdlc3xlbnwwfHwwfHx8MA%3D%3D" alt="Consultation" style="width: 100%; height: 200px; object-fit: cover; border-radius: 4px; margin-bottom: 1rem;">
-                <h3>Consultation</h3>
-                <p>Expert advice on choosing the right equipment for your facility or home gym.</p>
-            </div>
-            <div class="service-card">
-                <img src="https://images.unsplash.com/photo-1521805103424-d8f8430e8933?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGd5bSUyMGltYWdlc3xlbnwwfHwwfHx8MA%3D%3D" alt="Custom Solutions" style="width: 100%; height: 200px; object-fit: cover; border-radius: 4px; margin-bottom: 1rem;">
-                <h3>Custom Solutions</h3>
-                <p>Tailored fitness equipment solutions for commercial gyms and specialized training facilities.</p>
-            </div>
-        </div>
-    </section>
-
-    <section id="products">
-        <h2>Our Products</h2>
-        <div class="products-grid">
-            <div class="product-card">
-                <img src="https://images.unsplash.com/photo-1507398941214-572c25f4b1dc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGd5bSUyMGltYWdlc3xlbnwwfHwwfHx8MA%3D%3D" alt="Treadmill">
-                <h3>Commercial Treadmills</h3>
-                <p>High-performance treadmills built for durability and user comfort.</p>
-            </div>
-            <div class="product-card">
-                <img src="https://images.unsplash.com/photo-1534258936925-c58bed479fcb?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fGd5bSUyMGltYWdlc3xlbnwwfHwwfHx8MA%3D%3D" alt="Strength Equipment">
-                <h3>Strength Equipment</h3>
-                <p>Premium strength training machines for all muscle groups.</p>
-            </div>
-            <div class="product-card">
-                <img src="https://images.unsplash.com/photo-1521805103424-d8f8430e8933?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGd5bSUyMGltYWdlc3xlbnwwfHwwfHx8MA%3D%3D" alt="Cardio Equipment">
-                <h3>Cardio Equipment</h3>
-                <p>State-of-the-art cardio machines for effective workouts.</p>
-            </div>
-        </div>
-
-        <div class="scheduling-section" style="display: none;">
-    <h3>Schedule an Appointment</h3>
-    <form id="schedule-form">
-        <input type="text" id="name" placeholder="Your Name" required>
-        <input type="email" id="email" placeholder="Your Email" required>
-        <input type="date" id="date" required>
-        <input type="time" id="time" required>
-        <select id="service-type" required>
-            <option value="Installation">Equipment Installation</option>
-            <option value="Maintenance">Maintenance & Repair</option>
-            <option value="Consultation">Consultation</option>
-            <option value="Custom">Custom Solutions</option>
-        </select>
-        <button type="submit">Schedule</button>
-    </form>
-</div>
-    </section>
-
-    <section id="contact" style="background-color: #f5f5f5;">
-        <h2>Contact Us</h2>
-        <div class="contact-content">
-            <form>
-                <input type="text" placeholder="Name" required>
-                <input type="email" placeholder="Email" required>
-                <textarea rows="5" placeholder="Message" required></textarea>
-                <button type="submit">Send Message</button>
-            </form>
-        </div>
-    </section>
-
-    <footer>
-        <p>&copy; 2025 PowerFit Equipment Co. All rights reserved.</p>
-        <p>123 Fitness Street, Gym City, GC 12345</p>
-        <p>Phone: (555) 123-4567 | Email: info@powerfitequipment.com</p>
-    </footer>
 
     <div class="chat-widget">
-        <button class="chat-button" onclick="toggleChat()">
-            <i class="fas fa-comments"></i>
-        </button>
-
+        <button class="chat-button" onclick="toggleChat()">💬</button>
         <div class="chat-window" id="chatWindow">
             <div class="chat-header">
-                <h3>PowerFit Support</h3>
-                <button onclick="toggleChat()" style="background: none; border: none; color: white; cursor: pointer;">
-                    <i class="fas fa-times"></i>
-                </button>
+                <h4>Chat with us</h4>
+                <button onclick="toggleChat()">❌</button>
             </div>
-            <div class="chat-messages" id="chatMessages">
-                <div class="message bot-message">
-                    Hello! Welcome to PowerFit Equipment Co. How can I help you today?
-                </div>
-            </div>
+            <div class="chat-messages" id="chatMessages"></div>
             <div class="chat-input-container">
-                <input type="text" class="chat-input" id="chatInput" placeholder="Type your message...">
-                <button class="chat-send" onclick="sendMessage()">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
+                <input type="text" id="chatInput" class="chat-input" placeholder="Ask us anything..." />
+                <button class="chat-send" onclick="sendMessage()">Send</button>
             </div>
         </div>
     </div>
 
     <script>
         function toggleChat() {
-    const chatWindow = document.getElementById('chatWindow');
-    chatWindow.style.display = chatWindow.style.display === 'none' ? 'flex' : 'none';
-}
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.style.display = chatWindow.style.display === 'none' ? 'flex' : 'none';
+        }
 
-function handleScheduling(message) {
-    if (message.toLowerCase().includes('schedule') || 
-        message.toLowerCase().includes('appointment')) {
-        document.querySelector('.scheduling-section').style.display = 'block';
-        addMessage("You can schedule an appointment below.", 'bot');
-    }
-}
+        function sendMessage() {
+            const input = document.getElementById("chatInput").value;
+            if (input.trim()) {
+                addMessage(input, 'user');
+                document.getElementById("chatInput").value = '';
 
-function sendMessage() {
-    const input = document.getElementById('chatInput');
-    const message = input.value.trim();
+                fetch('/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: `message=${encodeURIComponent(input)}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    addMessage(data.response, 'bot');
+                    handleScheduling(data.response);
+                });
+            }
+        }
 
-    if (message) {
-        // Add user message
-        addMessage(message, 'user');
-        input.value = '';
+        function addMessage(message, sender) {
+            const messageContainer = document.createElement('div');
+            messageContainer.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
+            messageContainer.innerText = message;
+            document.getElementById("chatMessages").appendChild(messageContainer);
+            document.getElementById("chatMessages").scrollTop = document.getElementById("chatMessages").scrollHeight;
+        }
 
-        // Handle scheduling intent
-        handleScheduling(message);
-
-        // Simulate bot response (Replace with actual server request if needed)
-        setTimeout(() => {
-            addMessage("Thank you for reaching out! How else can I assist you?", 'bot');
-        }, 1000);
-    }
-}
-
-function addMessage(message, sender) {
-    const chatMessages = document.getElementById('chatMessages');
-    const messageDiv = document.createElement('div');
-    messageDiv.classList.add('message', sender + '-message');
-    
-    // Handle multi-line messages
-    message.split('\n').forEach((line, index) => {
-        if (index > 0) messageDiv.appendChild(document.createElement('br'));
-        messageDiv.appendChild(document.createTextNode(line));
-    });
-
-    chatMessages.appendChild(messageDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-// Event listener for enter key in chat input
-document.getElementById('chatInput').addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        event.preventDefault();
-        sendMessage();
-    }
-});
-
+        function handleScheduling(message) {
+            if (message.toLowerCase().includes('schedule') || message.toLowerCase().includes('appointment')) {
+                document.querySelector('.scheduling-section').style.display = 'block';
+                addMessage("You can schedule an appointment below.", 'bot');
+            }
+        }
     </script>
-
 </body>
 </html>
