@@ -49,7 +49,10 @@ def get_bot_response(user_input):
 
     # Prioritize specific actions (like scheduling)
     if re.search(r"(book|schedule).*(meeting|appointment)", user_input, re.IGNORECASE):
-        <iframe src="https://calendar.google.com/calendar/embed?src=kanchan.g12%40gmail.com&ctz=Europe%2FLondon" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+        calendar_iframe = '''
+        <iframe src="https://calendar.google.com/calendar/embed?src=kanchan.g12%40gmail.com&ctz=Europe%2FLondon" 
+        style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+        '''
         return calendar_iframe
 
     # Handle complaints, orders, and leads *separately* and *after* specific actions.
