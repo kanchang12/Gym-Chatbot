@@ -11,6 +11,9 @@ client = OpenAI(api_key=openai_api_key)
 
 zapier_webhook_url = os.environ.get("ZAPIER_WEBHOOK_URL")
 
+# Zoho CRM details
+ZOHO_ACCESS_TOKEN = os.environ.get('ZOHO_ACCESS_TOKEN')
+
 def get_bot_response(user_input):
     response = client.chat.completions.create(
         model="gpt-4",  # You can choose a different model if needed
@@ -49,6 +52,7 @@ def get_bot_response(user_input):
             else:
                 return "I apologize, but there was an issue scheduling your appointment. Please try again or contact us directly."
 
+    # Google Calendar iframe for booking
     elif any(keyword in user_input.lower() for keyword in ["schedule", "appointment", "book time", "google calendar"]):
         return '''
             Sure! You can book an appointment using our Google Calendar: 
@@ -84,7 +88,7 @@ def send_to_zoho_crm(name, email, phone, inquiry):
     try:
         zoho_crm_url = "https://www.zohoapis.com/crm/v2/Leads"
         headers = {
-            "Authorization": f"Zoho-oauthtoken {os.environ.get('ZOHO_ACCESS_TOKEN')}",
+            "Authorization": f"Zoho-oauthtoken {ZOHO_ACCESS_TOKEN}",
             "Content-Type": "application/json"
         }
         payload = {
@@ -119,11 +123,10 @@ def chat():
                 return jsonify({'response': "Sorry, there was an issue sending your details. Please try again."})
 
     return jsonify({'response': bot_response})
+
 @app.route('/')
 def index():
     return render_template('index.html')
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
