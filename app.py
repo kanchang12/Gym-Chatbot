@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 from openai import OpenAI
 import os
+import requests
 
 app = Flask(__name__)
 
@@ -8,6 +9,10 @@ app = Flask(__name__)
 # Replace with your actual OpenAI API key
 openai_api_key = os.environ.get("API-KEY")
 client = OpenAI(api_key=openai_api_key)
+
+
+zapier_webhook_url = os.environ.get("ZAPIER_WEBHOOK_URL")
+
 
 def get_bot_response(user_input):
     try:
@@ -110,9 +115,36 @@ Ready to equip your gym or home workout space? Have questions about our products
             temperature=0.7, 
         )
         return response.choices[0].message.content
+    if "SCHEDULE_REQUEST|" in bot_response:
+            parts = bot_response.split("|")
+            if len(parts) == 6:
+                success = schedule_appointment(parts[1], parts[2], parts[3], parts[4], parts[5])
+                if success:
+                    return f"Great! I've scheduled your appointment for {parts[3]} at {parts[4]}. You'll receive a confirmation email shortly."
+                else:
+                    return "I apologize, but there was an issue scheduling your appointment. Please try again or contact us directly."
+            
+        return bot_response
+        
+
     except Exception as e:
         print(f"Error interacting with OpenAI API: {e}")
         return "I'm having trouble understanding. Please try again."
+
+def schedule_appointment(name, email, date, time, service_type):
+    try:
+        payload = {
+            "name": name,
+            "email": email,
+            "date": date,
+            "time": time,
+            "service_type": service_type
+        }
+        response = requests.post(zapier_webhook_url, json=payload)
+        return response.status_code == 200
+    except Exception as e:
+        print(f"Scheduling Error: {e}")
+        return False
 
 @app.route('/')
 def index():
