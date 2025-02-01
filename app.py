@@ -50,8 +50,7 @@ def get_bot_response(user_input):
     # Prioritize specific actions (like scheduling)
     if re.search(r"(book|schedule).*(meeting|appointment)", user_input, re.IGNORECASE):
         calendar_iframe = '''
-        <iframe src="https://calendar.google.com/calendar/embed?src=kanchan.g12%40gmail.com&ctz=Europe%2FLondon" 
-        style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+        https://calendar.google.com/calendar/u/0?cid=a2FuY2hhbi5nMTJAZ21haWwuY29t
         '''
         return calendar_iframe
 
