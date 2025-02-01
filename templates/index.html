@@ -390,78 +390,60 @@
 
     <script>
         function toggleChat() {
-            const chatWindow = document.getElementById('chatWindow');
-            chatWindow.style.display = chatWindow.style.display === 'none' ? 'flex' : 'none';
-        }
+    const chatWindow = document.getElementById('chatWindow');
+    chatWindow.style.display = chatWindow.style.display === 'none' ? 'flex' : 'none';
+}
 
-        function handleScheduling(message) {
+function handleScheduling(message) {
     if (message.toLowerCase().includes('schedule') || 
         message.toLowerCase().includes('appointment')) {
         document.querySelector('.scheduling-section').style.display = 'block';
+        addMessage("You can schedule an appointment below.", 'bot');
     }
 }
 
-        function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const message = input.value.trim();
+function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
 
-            if (message) {
-                // Add user message
-                addMessage(message, 'user');
-                input.value = '';
+    if (message) {
+        // Add user message
+        addMessage(message, 'user');
+        input.value = '';
 
-                // Send message to server
-                fetch('/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: new URLSearchParams({
-                        message: message
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    addMessage(data.response, 'bot');
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    addMessage("I'm having trouble understanding. Please try again.", 'bot');
-                });
-            }
-            document.querySelector('#chat-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const message = document.querySelector('#user-input').value;
-    handleScheduling(message);
-        }
+        // Handle scheduling intent
+        handleScheduling(message);
 
-        function addMessage(message, sender) {
-            const chatMessages = document.getElementById('chatMessages');
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message');
-            messageDiv.classList.add(sender + '-message');
+        // Simulate bot response (Replace with actual server request if needed)
+        setTimeout(() => {
+            addMessage("Thank you for reaching out! How else can I assist you?", 'bot');
+        }, 1000);
+    }
+}
 
-            // Handle multi-line messages
-            message.split('\n').forEach((line, index) => {
-                if (index > 0) {
-                    messageDiv.appendChild(document.createElement('br'));
-                }
-                messageDiv.appendChild(document.createTextNode(line));
-            });
+function addMessage(message, sender) {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message', sender + '-message');
+    
+    // Handle multi-line messages
+    message.split('\n').forEach((line, index) => {
+        if (index > 0) messageDiv.appendChild(document.createElement('br'));
+        messageDiv.appendChild(document.createTextNode(line));
+    });
 
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
 
-        // Add event listener for Enter key
-        document.getElementById('chatInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
+// Event listener for enter key in chat input
+document.getElementById('chatInput').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        sendMessage();
+    }
+});
 
-        // Initialize chat window as hidden
-        document.getElementById('chatWindow').style.display = 'none';
     </script>
 
 </body>
