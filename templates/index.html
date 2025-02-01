@@ -418,85 +418,133 @@
 
 
 
-    <script>
-    // Ensure the DOM is fully loaded before executing JavaScript
-    document.addEventListener("DOMContentLoaded", function () {
-        const chatButton = document.querySelector(".chat-button");
-        const chatWindow = document.getElementById('chatWindow');
-        
-        // Toggle chat window visibility
-        chatButton.addEventListener("click", function () {
-            chatWindow.style.display = chatWindow.style.display === 'none' ? 'flex' : 'none';
+  // Replace your existing chat JavaScript with this:
+
+<script>
+function toggleChat() {
+    const chatWindow = document.getElementById('chatWindow');
+    chatWindow.style.display = chatWindow.style.display === 'none' ? 'flex' : 'none';
+}
+
+function sendMessage() {
+    const chatInput = document.getElementById('chatInput');
+    const message = chatInput.value.trim();
+    
+    if (!message) return;
+    
+    // Add user message
+    addMessage(message, 'user');
+    chatInput.value = '';
+
+    // Check for keywords
+    const appointmentKeywords = ['appointment', 'schedule', 'book', 'meeting'];
+    const complaintKeywords = ['complaint', 'feedback', 'connect', 'issue', 'problem'];
+
+    const isAppointment = appointmentKeywords.some(keyword => 
+        message.toLowerCase().includes(keyword)
+    );
+    const isComplaint = complaintKeywords.some(keyword => 
+        message.toLowerCase().includes(keyword)
+    );
+
+    // Handle appointment requests
+    if (isAppointment) {
+        const appointmentResponse = `
+            <div>
+                <p>I'll help you schedule an appointment. Click below to book a time:</p>
+                <a href="https://calendar.zoho.in/eventreqForm/zz080212302dae9116d6ef3330452c31d40e6372bdad962211f9031055bd904ab414609977519d0f1221547968c673c8219a39b780?theme=0&l=en&tz=Europe%2FLondon" target="_blank">
+                    <button style="padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                        Schedule Appointment
+                    </button>
+                </a>
+            </div>
+        `;
+        addMessage(appointmentResponse, 'bot', true);
+    }
+    // Handle complaint/feedback requests
+    else if (isComplaint) {
+        const formHtml = `
+            <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                <p>Please provide your details:</p>
+                <form id="feedbackForm" onsubmit="submitFeedback(event)" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                    <input type="text" placeholder="First Name" required style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <input type="text" placeholder="Last Name" required style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <input type="email" placeholder="Email" required style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <textarea placeholder="Your message" required style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; min-height: 80px;"></textarea>
+                    <button type="submit" style="padding: 10px; background-color: #333; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        Submit Feedback
+                    </button>
+                </form>
+            </div>
+        `;
+        addMessage(formHtml, 'bot', true);
+    }
+    // Regular chat messages
+    else {
+        fetch('/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'message=' + encodeURIComponent(message)
+        })
+        .then(response => response.json())
+        .then(data => {
+            addMessage(data.response, 'bot');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            addMessage('Sorry, there was an error processing your message.', 'bot');
         });
+    }
+}
 
-        const chatMessages = document.getElementById('chatMessages');
-        const chatInput = document.getElementById('chatInput');
-        const chatSend = document.querySelector('.chat-send');
-        const calendarIframeContainer = document.getElementById('calendar-iframe-container');
-        const zohoIframeContainer = document.getElementById('zoho-iframe-container');
+function addMessage(message, sender, isHTML = false) {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${sender}-message`;
+    
+    if (isHTML) {
+        messageDiv.innerHTML = message;
+    } else {
+        messageDiv.textContent = message;
+    }
+    
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
 
-        chatSend.addEventListener('click', sendMessage);
-        chatInput.addEventListener('keyup', function(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
-        });
-
-        function sendMessage() {
-            const message = chatInput.value;
-            if (message.trim() !== "") {
-                displayMessage(message, 'user');
-                chatInput.value = '';
-
-                fetch('/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: 'message=' + encodeURIComponent(message)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    const botResponse = data.response;
-                    displayMessage(botResponse, 'bot');
-
-                    // Check for iframe keywords *after* displaying the bot's message
-                    if (botResponse.includes("https://calendar.google.com")) {
-                        calendarIframeContainer.style.display = 'block';
-                        zohoIframeContainer.style.display = 'none';
-                    } else if (botResponse.includes("https://forms.zohopublic.in")) {
-                        zohoIframeContainer.style.display = 'block';
-                        calendarIframeContainer.style.display = 'none';
-                    } else {
-                        calendarIframeContainer.style.display = 'none';
-                        zohoIframeContainer.style.display = 'none';
-                    }
-                });
-            }
+function submitFeedback(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    
+    // Submit to Zoho form
+    fetch('https://forms.zohopublic.in/banglaygolpo1/form/ContactUs/formperma/tygGH6LFquRO7lGxeTjGLt7WjgEioGLQf2F6L6XKSPo', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            addMessage('Thank you for your feedback! We will get back to you soon.', 'bot');
+            form.reset();
+        } else {
+            throw new Error('Submission failed');
         }
-
-        function displayMessage(message, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', sender + '-message');
-
-            // Handle multi-line messages (important!)
-            message.split('\n').forEach((line, index) => {
-                if (index > 0) messageDiv.appendChild(document.createElement('br'));
-                messageDiv.appendChild(document.createTextNode(line));
-            });
-
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        // Event listener for enter key in chat input (only once)
-        chatInput.addEventListener('keypress', function(event) { // Corrected
-            if (event.key === 'Enter') {
-                event.preventDefault(); // Prevent form submission
-                sendMessage();
-            }
-        });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        addMessage('Sorry, there was an error submitting your feedback. Please try again.', 'bot');
     });
+}
+
+// Add event listener for Enter key
+document.getElementById('chatInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        sendMessage();
+    }
+});
 </script>
 
 </body>
