@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from openai import OpenAI
 import os
 import requests
+import re
 
 app = Flask(__name__)
 
@@ -46,13 +47,34 @@ def get_bot_response(user_input):
     )
     bot_response = response.choices[0].message.content
 
-    if "SCHEDULE_REQUEST" in bot_response:
-        # Send the Google Calendar iframe for scheduling without needing to collect any user input
+    if re.search(r"(book|schedule).*meeting|appointment", user_input, re.IGNORECASE):
         calendar_iframe = '''
         <iframe src="https://calendar.google.com/calendar/embed?src=kanchan.g12%40gmail.com&ctz=Europe%2FLondon" 
         style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
         '''
         return calendar_iframe  # Return the iframe directly
+
+    # Handle complaints
+    if re.search(r"(complaint|issue|problem|feedback)", user_input, re.IGNORECASE):
+        ticket_data = {
+            "name": "User Name",  # Extract name dynamically as needed
+            "email": "user@example.com",  # Extract email dynamically as needed
+            "complaint_details": user_input
+        }
+        create_zoho_ticket(ticket_data)  # Create ticket in Zoho CRM
+        return "Thank you for your feedback. Your complaint has been submitted."
+
+    # Handle orders and leads
+    if re.search(r"(order|buy|purchase|interested)", user_input, re.IGNORECASE):
+        ticket_data = {
+            "name": "User Name",  # Extract name dynamically as needed
+            "email": "user@example.com",  # Extract email dynamically as needed
+            "order_details": user_input
+        }
+        create_zoho_ticket(ticket_data)  # Create ticket in Zoho CRM
+        return "Thank you for your interest. Your order request has been submitted."
+
+    return bot_response
 
     return bot_response
 
