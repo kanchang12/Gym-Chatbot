@@ -531,6 +531,7 @@ function submitToZoho() {
 
     fetch('https://forms.zohopublic.in/banglaygolpo1/form/ContactUs/formperma/tygGH6LFquRO7lGxeTjGLt7WjgEioGLQf2F6L6XKSPo', {
         method: 'POST',
+         mode: 'cors',
         body: formData
     })
     .then(response => {
