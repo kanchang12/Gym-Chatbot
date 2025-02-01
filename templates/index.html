@@ -328,19 +328,7 @@
 
         <div class="scheduling-section" style="display: none;">
     <h3>Schedule an Appointment</h3>
-    <form id="schedule-form">
-        <input type="text" id="name" placeholder="Your Name" required>
-        <input type="email" id="email" placeholder="Your Email" required>
-        <input type="date" id="date" required>
-        <input type="time" id="time" required>
-        <select id="service-type" required>
-            <option value="Installation">Equipment Installation</option>
-            <option value="Maintenance">Maintenance & Repair</option>
-            <option value="Consultation">Consultation</option>
-            <option value="Custom">Custom Solutions</option>
-        </select>
-        <button type="submit">Schedule</button>
-    </form>
+    <iframe src="https://calendar.google.com/calendar/embed?src=kanchan.g12%40gmail.com&ctz=Europe%2FLondon" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
 </div>
     </section>
 
@@ -409,22 +397,7 @@
     function showScheduleForm() {
         const chatMessages = document.getElementById('chatMessages');
         const scheduleForm = `
-            <div class="message bot-message">
-                <p>Please enter the following details for scheduling:</p>
-                <p><strong>Name:</strong> <input type="text" id="scheduleName" placeholder="Your Name" required></p>
-                <p><strong>Email:</strong> <input type="email" id="scheduleEmail" placeholder="Your Email" required></p>
-                <p><strong>Date:</strong> <input type="date" id="scheduleDate" required></p>
-                <p><strong>Time:</strong> <input type="time" id="scheduleTime" required></p>
-                <p><strong>Service:</strong>
-                    <select id="scheduleService" required>
-                        <option value="Installation">Equipment Installation</option>
-                        <option value="Maintenance">Maintenance & Repair</option>
-                        <option value="Consultation">Consultation</option>
-                        <option value="Custom">Custom Solutions</option>
-                    </select>
-                </p>
-                <button onclick="submitScheduleForm()">Submit</button>
-            </div>
+            <iframe src="https://calendar.google.com/calendar/embed?src=kanchan.g12%40gmail.com&ctz=Europe%2FLondon" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
         `;
         chatMessages.innerHTML += scheduleForm;
         chatMessages.scrollTop = chatMessages.scrollHeight;
