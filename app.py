@@ -6,7 +6,6 @@ import requests
 app = Flask(__name__)
 
 # Replace with your actual OpenAI API key
-# Replace with your actual OpenAI API key
 openai_api_key = os.environ.get("OPENAI_API_KEY")
 client = OpenAI(api_key=openai_api_key)
 
@@ -47,8 +46,8 @@ def get_bot_response(user_input):
     bot_response = response.choices[0].message.content
     return bot_response
 
-# Function to send data to Zoho CRM (e.g., for sales inquiries)
-def send_to_zoho_crm(name, email, phone, inquiry):
+# Function to send data to Zoho CRM (e.g., for complaints or order inquiries)
+def send_to_zoho_crm(name, email, phone, complaint):
     try:
         zoho_crm_url = "https://www.zohoapis.com/crm/v2/Leads"
         access_token = os.environ.get("ZOHO_ACCESS_TOKEN")  # Ensure the access token is available
@@ -63,7 +62,7 @@ def send_to_zoho_crm(name, email, phone, inquiry):
                 "Email": email,
                 "Phone": phone,
                 "Lead_Source": "Chatbot",
-                "Description": inquiry
+                "Description": complaint
             }]
         }
         response = requests.post(zoho_crm_url, headers=headers, json=payload)
@@ -78,15 +77,28 @@ def chat():
     user_message = request.form['message']
     bot_response = get_bot_response(user_message)
 
-    # If user provides their details for Zoho CRM
-    if "Name" in user_message and "Email" in user_message and "Phone" in user_message:
-        details = user_message.split(",")  # Example: "John Doe, john@example.com, 1234567890"
-        if len(details) == 3:
-            success = send_to_zoho_crm(details[0].strip(), details[1].strip(), details[2].strip(), user_message)
-            if success:
-                return jsonify({'response': "Thank you! Your details have been sent to our sales team. We'll contact you shortly!"})
-            else:
-                return jsonify({'response': "Sorry, there was an issue sending your details. Please try again."})
+    # If the user is talking about booking
+    if "book" in user_message.lower() or "schedule" in user_message.lower() or "appointment" in user_message.lower():
+        return jsonify({
+            'response': """
+                To book an appointment, please use the calendar below:
+                <iframe src="https://calendar.google.com/calendar/embed?src=kanchan.g12%40gmail.com&ctz=Europe%2FLondon" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+            """
+        })
+
+    # If the user talks about complaints or order-related issues
+    if "complaint" in user_message.lower() or "order" in user_message.lower():
+        # Check if the user provided their details for Zoho CRM
+        if "Name" in user_message and "Email" in user_message and "Phone" in user_message:
+            details = user_message.split(",")  # Example: "John Doe, john@example.com, 1234567890"
+            if len(details) == 3:
+                success = send_to_zoho_crm(details[0].strip(), details[1].strip(), details[2].strip(), user_message)
+                if success:
+                    return jsonify({'response': "Thank you! Your complaint has been sent to our customer service team. We'll contact you shortly!"})
+                else:
+                    return jsonify({'response': "Sorry, there was an issue sending your complaint. Please try again."})
+        else:
+            return jsonify({'response': "Please provide your name, email, and phone number for us to proceed with your complaint."})
 
     return jsonify({'response': bot_response})
 
@@ -117,7 +129,6 @@ def zoho_callback():
         refresh_token = response.json()['refresh_token']
 
         # Save access_token and refresh_token securely
-        # Don't store tokens in environment variables for production
         # Example: save to a database or secure storage
         os.environ['ZOHO_ACCESS_TOKEN'] = access_token
         os.environ['ZOHO_REFRESH_TOKEN'] = refresh_token
