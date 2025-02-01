@@ -48,14 +48,17 @@ def get_bot_response(user_input):
     )
     bot_response = response.choices[0].message.content
 
+   
+
     # If user wants to schedule an appointment (detected by keywords in the bot response)
     if re.search(r"(book|schedule).*(appointment|meeting)", bot_response, re.IGNORECASE):
         calendar_iframe = '''
-        <a href="https://calendar.zoho.in/eventreqForm/zz080212302dae9116d6ef3330452c31d40e6372bdad962211f9031055bd904ab414609977519d0f1221547968c673c8219a39b780?theme=0&l=en&tz=Europe%2FLondon" target="_blank">
+        <div>
+            <p>Click the button below to schedule your appointment:</p>
             <iframe src="https://calendar.zoho.in/eventreqForm/zz080212302dae9116d6ef3330452c31d40e6372bdad962211f9031055bd904ab414609977519d0f1221547968c673c8219a39b780?theme=0&l=en&tz=Europe%2FLondon" 
-                    frameBorder="0" scrolling="no" marginWidth="0" border="0px" marginHeight="0" height="350px" width="432px" allowTransparency="true" align="center">
+                    frameborder="0" scrolling="no" marginwidth="0" marginheight="0" height="350px" width="100%" allowTransparency="true">
             </iframe>
-        </a>
+        </div>
         '''
         return calendar_iframe
 
@@ -63,11 +66,12 @@ def get_bot_response(user_input):
     complaint_match = re.search(r"(complaint|issue|problem|feedback)", bot_response, re.IGNORECASE)
     if complaint_match:
         form_iframe = '''
-        <a href="https://forms.zohopublic.in/banglaygolpo1/form/ContactUs/formperma/tygGH6LFquRO7lGxeTjGLt7WjgEioGLQf2F6L6XKSPo" target="_blank">
+        <div>
+            <p>Please fill out the form below to lodge your complaint:</p>
             <iframe aria-label='Contact Us' frameborder="0" style="height:500px;width:99%;border:none;" 
                     src="https://forms.zohopublic.in/banglaygolpo1/form/ContactUs/formperma/tygGH6LFquRO7lGxeTjGLt7WjgEioGLQf2F6L6XKSPo">
             </iframe>
-        </a>
+        </div>
         '''
         return form_iframe
 
