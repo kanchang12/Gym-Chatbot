@@ -367,7 +367,7 @@
             <i class="fas fa-comments"></i>
         </button>
 
-        <div class="chat-window" id="chatWindow">
+        <div class="chat-window" id="chatWindow" style="display:none;">
             <div class="chat-header">
                 <h3>PowerFit Support</h3>
                 <button onclick="toggleChat()" style="background: none; border: none; color: white; cursor: pointer;">
@@ -388,64 +388,7 @@
         </div>
     </div>
 
-    <script>
-function toggleChat() {
-    const chatWindow = document.getElementById('chatWindow');
-    chatWindow.style.display = chatWindow.style.display === 'none' ? 'flex' : 'none';
-}
-
-
-function handleScheduling(message) {
-    if (message.toLowerCase().includes('schedule') || 
-        message.toLowerCase().includes('appointment')) {
-        document.querySelector('.scheduling-section').style.display = 'block';
-        addMessage("You can schedule an appointment below.", 'bot');
-    }
-}
-
-function sendMessage() {
-    const input = document.getElementById('chatInput');
-    const message = input.value.trim();
-
-    if (message) {
-        // Add user message
-        addMessage(message, 'user');
-        input.value = '';
-
-        // Handle scheduling intent
-        handleScheduling(message);
-
-        // Simulate bot response (Replace with actual server request if needed)
-        setTimeout(() => {
-            addMessage("Thank you for reaching out! How else can I assist you?", 'bot');
-        }, 1000);
-    }
-}
-
-function addMessage(message, sender) {
-    const chatMessages = document.getElementById('chatMessages');
-    const messageDiv = document.createElement('div');
-    messageDiv.classList.add('message', sender + '-message');
-    
-    // Handle multi-line messages
-    message.split('\n').forEach((line, index) => {
-        if (index > 0) messageDiv.appendChild(document.createElement('br'));
-        messageDiv.appendChild(document.createTextNode(line));
-    });
-
-    chatMessages.appendChild(messageDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-// Event listener for enter key in chat input
-document.getElementById('chatInput').addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        event.preventDefault();
-        sendMessage();
-    }
-});
-
-        <script>
+          <script>
     // Toggle the chat window visibility
     function toggleChat() {
         const chatWindow = document.getElementById('chatWindow');
@@ -571,9 +514,6 @@ fetch('https://hooks.zapier.com/hooks/catch/18968519/2f0a79a/', {
         }
     });
 </script>
-
-
-    </script>
 
 </body>
 </html>
