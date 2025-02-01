@@ -52,7 +52,7 @@ def get_bot_response(user_input):
 
     # If user wants to schedule an appointment (detected by keywords in the bot response)
     if re.search(r"(book|schedule).*(appointment|meeting)", bot_response, re.IGNORECASE):
-        calendar_iframe = '''
+        calendar_button = '''
         <div>
             <p>Click the button below to schedule your appointment:</p>
             <a href="https://calendar.zoho.in/eventreqForm/zz080212302dae9116d6ef3330452c31d40e6372bdad962211f9031055bd904ab414609977519d0f1221547968c673c8219a39b780?theme=0&l=en&tz=Europe%2FLondon" target="_blank">
@@ -62,21 +62,22 @@ def get_bot_response(user_input):
             </a>
         </div>
         '''
-        return calendar_iframe
-
+        return calendar_button  # This will render the button in the frontend.
+    
     # If user wants to file a complaint (detected by complaint-related keywords in the bot response)
     complaint_match = re.search(r"(complaint|issue|problem|feedback)", bot_response, re.IGNORECASE)
     if complaint_match:
-        form_iframe = '''
+        complaint_form = '''
         <div>
             <p>Please fill out the form below to lodge your complaint:</p>
-            <a><iframe aria-label='Contact Us' frameborder="0" style="height:500px;width:99%;border:none;" 
+            <iframe aria-label='Contact Us' frameborder="0" style="height:500px;width:99%;border:none;" 
                     src="https://forms.zohopublic.in/banglaygolpo1/form/ContactUs/formperma/tygGH6LFquRO7lGxeTjGLt7WjgEioGLQf2F6L6XKSPo">
-            </iframe></a
+            </iframe>
         </div>
         '''
-        return form_iframe
-
+        return complaint_form  # This will render the complaint form in the frontend.
+    
+    # Default return if no match
     return bot_response
 
 @app.route('/')
