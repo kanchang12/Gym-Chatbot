@@ -222,6 +222,19 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
+        .iframe-container {
+            display: none; /* Initially hidden */
+            width: 100%; /* Or a specific width */
+            height: 400px; /* Or a specific height */
+            margin-top: 20px; /* Add some spacing */
+        }
+
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
         input, textarea {
             padding: 0.5rem;
             border: 1px solid #ddd;
@@ -328,7 +341,19 @@
 
         <div class="scheduling-section" style="display: none;">
     <h3>Schedule an Appointment</h3>
-    <iframe src="https://calendar.google.com/calendar/embed?src=kanchan.g12%40gmail.com&ctz=Europe%2FLondon" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+    <form id="schedule-form">
+        <input type="text" id="name" placeholder="Your Name" required>
+        <input type="email" id="email" placeholder="Your Email" required>
+        <input type="date" id="date" required>
+        <input type="time" id="time" required>
+        <select id="service-type" required>
+            <option value="Installation">Equipment Installation</option>
+            <option value="Maintenance">Maintenance & Repair</option>
+            <option value="Consultation">Consultation</option>
+            <option value="Custom">Custom Solutions</option>
+        </select>
+        <button type="submit">Schedule</button>
+    </form>
 </div>
     </section>
 
@@ -350,30 +375,25 @@
         <p>Phone: (555) 123-4567 | Email: info@powerfitequipment.com</p>
     </footer>
 
-    <div class="chat-widget">
-        <button class="chat-button" onclick="toggleChat()">
-            <i class="fas fa-comments"></i>
-        </button>
+    <div id="chat-container">
+        <div id="chat-messages">
+            </div>
+        <input type="text" id="user-input" placeholder="Type your message...">
+        <button id="send-button">Send</button>
 
-        <div class="chat-window" id="chatWindow" style="display:none;">
-            <div class="chat-header">
-                <h3>PowerFit Support</h3>
-                <button onclick="toggleChat()" style="background: none; border: none; color: white; cursor: pointer;">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="chat-messages" id="chatMessages">
-                <div class="message bot-message">
-                    Hello! Welcome to PowerFit Equipment Co. How can I help you today?
-                </div>
-            </div>
-            <div class="chat-input-container">
-                <input type="text" class="chat-input" id="chatInput" placeholder="Type your message...">
-                <button class="chat-send" onclick="sendMessage()">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-            </div>
+        <div class="iframe-container" id="calendar-iframe-container">
+            <iframe id="calendar-iframe"
+                src="https://calendar.google.com/calendar/u/0?cid=a2FuY2hhbi5nMTJAZ21haWwuY29t"
+                frameborder="0" scrolling="no"></iframe>
         </div>
+
+        <div class="iframe-container" id="zoho-iframe-container">
+            <iframe id="zoho-iframe"
+                src="https://forms.zohopublic.in/banglaygolpo1/form/ContactUs/formperma/tygGH6LFquRO7lGxeTjGLt7WjgEioGLQf2F6L6XKSPo"
+                frameborder="0" scrolling="no"></iframe>
+        </div>
+
+    </div>
     </div>
 
           <script>
@@ -383,57 +403,66 @@
         chatWindow.style.display = chatWindow.style.display === 'none' ? 'flex' : 'none';
     }
 
-    // Handle scheduling requests
-    function handleScheduling(message) {
-        if (message.toLowerCase().includes('schedule') || 
-            message.toLowerCase().includes('appointment')) {
-            document.querySelector('.scheduling-section').style.display = 'block';
-            addMessage("You can schedule an appointment below. Please provide your details.", 'bot');
-            showScheduleForm();
+        <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const calendarIframeContainer = document.getElementById('calendar-iframe-container');
+        const zohoIframeContainer = document.getElementById('zoho-iframe-container');
+        const calendarIframe = document.getElementById('calendar-iframe');
+        const zohoIframe = document.getElementById('zoho-iframe');
+
+        sendButton.addEventListener('click', sendMessage);
+        userInput.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+
+        function sendMessage() {
+            const message = userInput.value;
+            if (message.trim() !== "") {
+                displayMessage(message, 'user'); // Display user message
+                userInput.value = ''; // Clear input field
+
+                fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: 'message=' + encodeURIComponent(message)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const botResponse = data.response;
+                    displayMessage(botResponse, 'bot'); // Display bot response
+
+                    // Check for iframe keywords *after* displaying the bot's message
+                    if (botResponse.includes("https://calendar.google.com")) {
+                        calendarIframeContainer.style.display = 'block';
+                        zohoIframeContainer.style.display = 'none';
+                        // You can also set the src of the iframe here if needed:
+                        // calendarIframe.src = botResponse; 
+                    } else if (botResponse.includes("https://forms.zohopublic.in")) {
+                        zohoIframeContainer.style.display = 'block';
+                        calendarIframeContainer.style.display = 'none';
+                    } else {
+                        calendarIframeContainer.style.display = 'none';
+                        zohoIframeContainer.style.display = 'none';
+                    }
+                });
+            }
         }
-    }
 
-    // Show the schedule form in chat window
-    function showScheduleForm() {
-        const chatMessages = document.getElementById('chatMessages');
-        const scheduleForm = `
-            <iframe src="https://calendar.google.com/calendar/embed?src=kanchan.g12%40gmail.com&ctz=Europe%2FLondon" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
-        `;
-        chatMessages.innerHTML += scheduleForm;
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    // Submit the schedule form and send the data to Zapier
-    function submitScheduleForm() {
-        const name = document.getElementById('scheduleName').value;
-        const email = document.getElementById('scheduleEmail').value;
-        const date = document.getElementById('scheduleDate').value;
-        const time = document.getElementById('scheduleTime').value;
-        const service = document.getElementById('scheduleService').value;
-
-        if (name && email && date && time && service) {
-            // Send the data to Zapier via a Webhook
-fetch('https://hooks.zapier.com/hooks/catch/18968519/2f0a79a/', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-        name: name,
-        email: email,
-        date: date,
-        time: time,
-        service: service
-    }),
-})
-.then(response => response.json())
-.then(data => {
-    // Show confirmation message
-    addMessage("Your appointment has been scheduled! Thank you.", 'bot');
-})
-.catch(error => {
-    console.error('Error sending data to Zapier:', error);
-});
+        function displayMessage(message, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender);
+            messageDiv.textContent = message;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight; // Keep scrolled to bottom
+        }
+    </script>
 
 
             // Add user confirmation message
