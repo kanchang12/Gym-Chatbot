@@ -325,6 +325,23 @@
                 <p>State-of-the-art cardio machines for effective workouts.</p>
             </div>
         </div>
+
+        <div class="scheduling-section" style="display: none;">
+    <h3>Schedule an Appointment</h3>
+    <form id="schedule-form">
+        <input type="text" id="name" placeholder="Your Name" required>
+        <input type="email" id="email" placeholder="Your Email" required>
+        <input type="date" id="date" required>
+        <input type="time" id="time" required>
+        <select id="service-type" required>
+            <option value="Installation">Equipment Installation</option>
+            <option value="Maintenance">Maintenance & Repair</option>
+            <option value="Consultation">Consultation</option>
+            <option value="Custom">Custom Solutions</option>
+        </select>
+        <button type="submit">Schedule</button>
+    </form>
+</div>
     </section>
 
     <section id="contact" style="background-color: #f5f5f5;">
@@ -377,6 +394,13 @@
             chatWindow.style.display = chatWindow.style.display === 'none' ? 'flex' : 'none';
         }
 
+        function handleScheduling(message) {
+    if (message.toLowerCase().includes('schedule') || 
+        message.toLowerCase().includes('appointment')) {
+        document.querySelector('.scheduling-section').style.display = 'block';
+    }
+}
+
         function sendMessage() {
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
@@ -405,6 +429,10 @@
                     addMessage("I'm having trouble understanding. Please try again.", 'bot');
                 });
             }
+            document.querySelector('#chat-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const message = document.querySelector('#user-input').value;
+    handleScheduling(message);
         }
 
         function addMessage(message, sender) {
