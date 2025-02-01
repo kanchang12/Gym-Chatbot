@@ -7,7 +7,7 @@ import re
 app = Flask(__name__)
 
 # Replace with your actual OpenAI API key
-openai_api_key = os.environ.get("API-KEY")
+openai_api_key = os.environ.get("OPENAI_API_KEY")
 client = OpenAI(api_key=openai_api_key)
 
 zapier_webhook_url = os.environ.get("ZAPIER_WEBHOOK_URL")
