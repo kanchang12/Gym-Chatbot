@@ -425,6 +425,15 @@
     </div>
 
 <script>
+let complaintState = {
+    active: false,
+    step: 0,
+    firstName: '',
+    lastName: '',
+    email: '',
+    message: ''
+};
+
 function toggleChat() {
     const chatWindow = document.getElementById('chatWindow');
     chatWindow.style.display = chatWindow.style.display === 'none' ? 'flex' : 'none';
@@ -440,51 +449,30 @@ function sendMessage() {
     addMessage(message, 'user');
     chatInput.value = '';
 
+    if (complaintState.active) {
+        handleComplaintFlow(message);
+        return;
+    }
+
     // Check for keywords
     const appointmentKeywords = ['appointment', 'schedule', 'book', 'meeting'];
-    const complaintKeywords = ['complaint', 'feedback', 'connect', 'issue', 'problem'];
+    const complaintKeywords = ['complaint', 'feedback', 'issue', 'problem'];
 
-    const isAppointment = appointmentKeywords.some(keyword => 
-        message.toLowerCase().includes(keyword)
-    );
-    const isComplaint = complaintKeywords.some(keyword => 
-        message.toLowerCase().includes(keyword)
-    );
-
-    // Handle appointment requests
-    if (isAppointment) {
-        const appointmentResponse = `
-            <div>
-                <p>I'll help you schedule an appointment. Click below to book a time:</p>
-                <a href="https://calendar.zoho.in/eventreqForm/zz080212302dae9116d6ef3330452c31d40e6372bdad962211f9031055bd904ab414609977519d0f1221547968c673c8219a39b780?theme=0&l=en&tz=Europe%2FLondon" target="_blank">
-                    <button style="padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">
-                        Schedule Appointment
-                    </button>
-                </a>
-            </div>
-        `;
-        addMessage(appointmentResponse, 'bot', true);
+    if (appointmentKeywords.some(keyword => message.toLowerCase().includes(keyword))) {
+        addMessage("I'll help you schedule an appointment. Click below to book a time:", 'bot');
+        const appointmentButton = document.createElement('a');
+        appointmentButton.href = "https://calendar.zoho.in/eventreqForm/zz080212302dae9116d6ef3330452c31d40e6372bdad962211f9031055bd904ab414609977519d0f1221547968c673c8219a39b780?theme=0&l=en&tz=Europe%2FLondon";
+        appointmentButton.target = "_blank";
+        appointmentButton.className = "appointment-button";
+        appointmentButton.textContent = "Schedule Appointment";
+        document.getElementById('chatMessages').appendChild(appointmentButton);
     }
-    // Handle complaint/feedback requests
-    else if (isComplaint) {
-        const formHtml = `
-            <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-top: 10px;">
-                <p>Please provide your details:</p>
-                <form id="feedbackForm" onsubmit="submitFeedback(event)" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-                    <input type="text" placeholder="First Name" required style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                    <input type="text" placeholder="Last Name" required style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                    <input type="email" placeholder="Email" required style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                    <textarea placeholder="Your message" required style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; min-height: 80px;"></textarea>
-                    <button type="submit" style="padding: 10px; background-color: #333; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                        Submit Feedback
-                    </button>
-                </form>
-            </div>
-        `;
-        addMessage(formHtml, 'bot', true);
+    else if (complaintKeywords.some(keyword => message.toLowerCase().includes(keyword))) {
+        complaintState.active = true;
+        addMessage("I'll help you submit your feedback. First, please tell me your first name:", 'bot');
     }
-    // Regular chat messages
     else {
+        // Regular chat flow
         fetch('/chat', {
             method: 'POST',
             headers: {
@@ -495,51 +483,86 @@ function sendMessage() {
         .then(response => response.json())
         .then(data => {
             addMessage(data.response, 'bot');
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            addMessage('Sorry, there was an error processing your message.', 'bot');
         });
     }
 }
 
-function addMessage(message, sender, isHTML = false) {
-    const chatMessages = document.getElementById('chatMessages');
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `message ${sender}-message`;
-    
-    if (isHTML) {
-        messageDiv.innerHTML = message;
-    } else {
-        messageDiv.textContent = message;
+function handleComplaintFlow(message) {
+    switch(complaintState.step) {
+        case 0:
+            complaintState.firstName = message;
+            complaintState.step++;
+            addMessage("Thank you! Now, please tell me your last name:", 'bot');
+            break;
+            
+        case 1:
+            complaintState.lastName = message;
+            complaintState.step++;
+            addMessage("Great! Please provide your email address:", 'bot');
+            break;
+            
+        case 2:
+            if (isValidEmail(message)) {
+                complaintState.email = message;
+                complaintState.step++;
+                addMessage("Perfect! Finally, please describe your feedback or concern:", 'bot');
+            } else {
+                addMessage("That doesn't look like a valid email address. Please try again:", 'bot');
+            }
+            break;
+            
+        case 3:
+            complaintState.message = message;
+            submitToZoho();
+            break;
     }
-    
-    chatMessages.appendChild(messageDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-function submitFeedback(event) {
-    event.preventDefault();
-    const form = event.target;
-    const formData = new FormData(form);
-    
-    // Submit to Zoho form
+function isValidEmail(email) {
+    return email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+}
+
+function submitToZoho() {
+    const formData = new FormData();
+    formData.append('First Name', complaintState.firstName);
+    formData.append('Last Name', complaintState.lastName);
+    formData.append('Email', complaintState.email);
+    formData.append('Message', complaintState.message);
+
     fetch('https://forms.zohopublic.in/banglaygolpo1/form/ContactUs/formperma/tygGH6LFquRO7lGxeTjGLt7WjgEioGLQf2F6L6XKSPo', {
         method: 'POST',
         body: formData
     })
     .then(response => {
         if (response.ok) {
-            addMessage('Thank you for your feedback! We will get back to you soon.', 'bot');
-            form.reset();
+            addMessage("Thank you for your feedback! We've received your submission and will get back to you soon.", 'bot');
         } else {
             throw new Error('Submission failed');
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        addMessage('Sorry, there was an error submitting your feedback. Please try again.', 'bot');
+        addMessage("I apologize, but there was an error submitting your feedback. Please try again later.", 'bot');
+    })
+    .finally(() => {
+        // Reset complaint state
+        complaintState = {
+            active: false,
+            step: 0,
+            firstName: '',
+            lastName: '',
+            email: '',
+            message: ''
+        };
     });
+}
+
+function addMessage(message, sender) {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${sender}-message`;
+    messageDiv.textContent = message;
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 // Add event listener for Enter key
