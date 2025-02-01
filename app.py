@@ -74,13 +74,7 @@ def schedule_appointment(name, email, date, time, service_type):
 
 @app.route('/')
 def index():
-    context = """
-    This chatbot is designed to assist users with inquiries related to PowerFit Equipment Co., a fitness equipment company. 
-    PowerFit offers a range of products and services, including:
-    - Products: Commercial Treadmills, Strength Equipment, Cardio Equipment
-    - Services: Equipment Installation, Maintenance & Repair, Consultation, Custom Solutions
-    """
-    return render_template('index.html', context=context)
+    return render_template('index.html')
 
 @app.route('/chat', methods=['POST'])
 def chat():
