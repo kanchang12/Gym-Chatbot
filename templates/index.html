@@ -375,34 +375,61 @@
         <p>Phone: (555) 123-4567 | Email: info@powerfitequipment.com</p>
     </footer>
 
-    <div id="chat-container">
-        <div id="chat-messages">
+   <div class="chat-widget">  <button class="chat-button" onclick="toggleChat()">
+            <i class="fas fa-comments"></i>  </button>
+
+        <div class="chat-window" id="chatWindow" style="display:none;"> <div class="chat-header">
+                <h3>PowerFit Support</h3>
+                <button onclick="toggleChat()" style="background: none; border: none; color: white; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-        <input type="text" id="user-input" placeholder="Type your message...">
-        <button id="send-button">Send</button>
+            <div class="chat-messages" id="chatMessages">  <div class="message bot-message">
+                    Hello! Welcome to PowerFit Equipment Co. How can I help you today?
+                </div>
+            </div>
+            <div class="chat-input-container">  <input type="text" class="chat-input" id="chatInput" placeholder="Type your message...">
+                <button class="chat-send" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
 
-        <div class="iframe-container" id="calendar-iframe-container">
-            <iframe id="calendar-iframe"
-                src="https://calendar.google.com/calendar/u/0?cid=a2FuY2hhbi5nMTJAZ21haWwuY29t"
-                frameborder="0" scrolling="no"></iframe>
+            <div class="iframe-container" id="calendar-iframe-container">
+                <iframe id="calendar-iframe"
+                    src="https://calendar.google.com/calendar/u/0?cid=a2FuY2hhbi5nMTJAZ21haWwuY29t"
+                    frameborder="0" scrolling="no"></iframe>
+            </div>
+
+            <div class="iframe-container" id="zoho-iframe-container">
+                <iframe id="zoho-iframe"
+                    src="https://forms.zohopublic.in/banglaygolpo1/form/ContactUs/formperma/tygGH6LFquRO7lGxeTjGLt7WjgEioGLQf2F6L6XKSPo"
+                    frameborder="0" scrolling="no"></iframe>
+            </div>
+
         </div>
-
-        <div class="iframe-container" id="zoho-iframe-container">
-            <iframe id="zoho-iframe"
-                src="https://forms.zohopublic.in/banglaygolpo1/form/ContactUs/formperma/tygGH6LFquRO7lGxeTjGLt7WjgEioGLQf2F6L6XKSPo"
-                frameborder="0" scrolling="no"></iframe>
-        </div>
-
     </div>
     </div>
 
           <script>
     // Toggle the chat window visibility
-    function toggleChat() {
-        const chatWindow = document.getElementById('chatWindow');
-        chatWindow.style.display = chatWindow.style.display === 'none' ? 'flex' : 'none';
-    }
+        function toggleChat() {
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.style.display = chatWindow.style.display === 'none' ? 'flex' : 'none';
+        }
 
+
+        const chatMessages = document.getElementById('chatMessages'); // Your original ID
+        const chatInput = document.getElementById('chatInput');     // Your original ID
+        const chatSend = document.querySelector('.chat-send');   // Your original class
+        const calendarIframeContainer = document.getElementById('calendar-iframe-container');
+        const zohoIframeContainer = document.getElementById('zoho-iframe-container');
+
+        chatSend.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
         <script>
         const chatMessages = document.getElementById('chat-messages');
         const userInput = document.getElementById('user-input');
