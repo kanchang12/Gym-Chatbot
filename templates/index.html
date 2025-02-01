@@ -375,8 +375,11 @@
         <p>Phone: (555) 123-4567 | Email: info@powerfitequipment.com</p>
     </footer>
 
-   <div class="chat-widget">  <button class="chat-button" onclick="toggleChat()">
-            <i class="fas fa-comments"></i>  </button>
+    // Toggle the chat window visibility
+    function toggleChat() {
+        const chatWindow = document.getElementById('chatWindow');
+        chatWindow.style.display = chatWindow.style.display === 'none' ? 'flex' : 'none';
+    }
 
         <div class="chat-window" id="chatWindow" style="display:none;"> <div class="chat-header">
                 <h3>PowerFit Support</h3>
