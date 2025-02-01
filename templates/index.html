@@ -382,43 +382,47 @@
             <i class="fas fa-comments"></i>
         </button>
 
-       <div class="chat-window" id="chatWindow" style="display:none;">
-    <div class="chat-header">
-        <h3>PowerFit Support</h3>
-        <button onclick="toggleChat()" style="background: none; border: none; color: white; cursor: pointer;">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-    <div class="chat-messages" id="chatMessages">
-        <div class="message bot-message">
-            Hello! Welcome to PowerFit Equipment Co. How can I help you today?
+        <div class="chat-window" id="chatWindow" style="display:none;">
+            <div class="chat-header">
+                <h3>PowerFit Support</h3>
+                <button onclick="toggleChat()" style="background: none; border: none; color: white; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot-message">
+                    Hello! Welcome to PowerFit Equipment Co. How can I help you today?
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Type your message...">
+                <button class="chat-send" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
         </div>
     </div>
-    <div class="chat-input-container">
-        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message...">
-        <button class="chat-send" onclick="sendMessage()">
-            <i class="fas fa-paper-plane"></i>
+
+
+     
+          <div>
+    <p>Click the button below to schedule your appointment:</p>
+    <a href="https://calendar.zoho.in/eventreqForm/zz080212302dae9116d6ef3330452c31d40e6372bdad962211f9031055bd904ab414609977519d0f1221547968c673c8219a39b780?theme=0&l=en&tz=Europe%2FLondon" target="_blank">
+        <button style="padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            Schedule Appointment
         </button>
+    </a>
+</div>
+
+            <div class="iframe-container" id="zoho-iframe-container">
+                <iframe id="zoho-iframe"
+                    src="https://forms.zohopublic.in/banglaygolpo1/form/ContactUs/formperma/tygGH6LFquRO7lGxeTjGLt7WjgEioGLQf2F6L6XKSPo"
+                    frameborder="0" scrolling="no"></iframe>
+            </div>
+
+        </div>
     </div>
-</div>
-
-<!-- Appointment Scheduling Button -->
-<a href="https://calendar.zoho.in/eventreqForm/zz080212302dae9116d6ef3330452c31d40e6372bdad962211f9031055bd904ab414609977519d0f1221547968c673c8219a39b780?theme=0&l=en&tz=Europe%2FLondon" target="_blank">
-    <button style="padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
-        Schedule Appointment
-    </button>
-</a>
-
-<!-- Complaint Form Embedded -->
-<div class="iframe-container" id="zoho-iframe-container">
-    <iframe id="zoho-iframe" 
-            src="https://forms.zohopublic.in/banglaygolpo1/form/ContactUs/formperma/tygGH6LFquRO7lGxeTjGLt7WjgEioGLQf2F6L6XKSPo" 
-            frameborder="0" scrolling="no"></iframe>
-</div>
-
-
-
-  // Replace your existing chat JavaScript with this:
+    </div>
 
 <script>
 function toggleChat() {
