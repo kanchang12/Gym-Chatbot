@@ -47,37 +47,38 @@ def get_bot_response(user_input):
     )
     bot_response = response.choices[0].message.content
 
-    if re.search(r"(book|schedule).*meeting|appointment", user_input, re.IGNORECASE):
-        calendar_iframe = '''
-        <iframe src="https://calendar.google.com/calendar/embed?src=kanchan.g12%40gmail.com&ctz=Europe%2FLondon" 
-        style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
-        '''
-        return calendar_iframe  # Return the iframe directly
+    # Prioritize specific actions (like scheduling)
+    if re.search(r"(book|schedule).*(meeting|appointment)", user_input, re.IGNORECASE):
+        <iframe src="https://calendar.google.com/calendar/embed?src=kanchan.g12%40gmail.com&ctz=Europe%2FLondon" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+        return calendar_iframe
 
-    # Handle complaints
-    if re.search(r"(complaint|issue|problem|feedback)", user_input, re.IGNORECASE):
-        ticket_data = {
-            "name": "User Name",  # Extract name dynamically as needed
-            "email": "user@example.com",  # Extract email dynamically as needed
-            "complaint_details": user_input
-        }
-        create_zoho_ticket(ticket_data)  # Create ticket in Zoho CRM
-        return "Thank you for your feedback. Your complaint has been submitted."
+    # Handle complaints, orders, and leads *separately* and *after* specific actions.
+    complaint_match = re.search(r"(complaint|issue|problem|feedback)", user_input, re.IGNORECASE)
+    order_match = re.search(r"(order|buy|purchase|interested)", user_input, re.IGNORECASE)
 
-    # Handle orders and leads
-    if re.search(r"(order|buy|purchase|interested)", user_input, re.IGNORECASE):
-        ticket_data = {
-            "name": "User Name",  # Extract name dynamically as needed
-            "email": "user@example.com",  # Extract email dynamically as needed
-            "order_details": user_input
-        }
-        create_zoho_ticket(ticket_data)  # Create ticket in Zoho CRM
-        return "Thank you for your interest. Your order request has been submitted."
+    if complaint_match or order_match:  # Check if either a complaint OR an order is mentioned
+        ticket_data = {}
 
-    return bot_response
+        if complaint_match:
+            ticket_data["complaint_details"] = user_input # Capture the whole user input as complaint
+            bot_response = "Thank you for your feedback. Your complaint has been submitted."  # Update bot response
+        if order_match:
+            ticket_data["order_details"] = user_input # Capture the whole user input as order
+            bot_response = "Thank you for your interest. Your order request has been submitted."  # Update bot response
 
-    return bot_response
+        # Extract name and email (Improved)
+        name_match = re.search(r"my name is (.*)|I am (.*)", user_input, re.IGNORECASE) # More robust name extraction
+        name = name_match.group(1) if name_match else "User Name" # Default if no name found
+        email_match = re.search(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}", user_input) #Email regex
+        email = email_match.group(0) if email_match else "user@example.com" # Default if no email found
 
+        ticket_data["name"] = name
+        ticket_data["email"] = email
+
+        create_zoho_ticket(ticket_data)  # Create Zoho ticket *after* gathering all info
+        return bot_response  # Return the appropriate response
+
+    return bot_response  # Default bot response if no special keywords are found
 
 
 @app.route('/')
