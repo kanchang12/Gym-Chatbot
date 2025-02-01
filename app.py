@@ -124,6 +124,44 @@ def chat():
 
     return jsonify({'response': bot_response})
 
+@app.route('/zoho_oauth_redirect')
+def zoho_oauth_redirect():
+    zoho_client_id = os.environ.get('ZOHO_CLIENT_ID')
+    zoho_redirect_uri = os.environ.get('ZOHO_REDIRECT_URI')
+    zoho_oauth_url = f"https://accounts.zoho.com/oauth/v2/auth?scope=ZohoCRM.modules.leads.CREATE&client_id={zoho_client_id}&response_type=code&access_type=offline&redirect_uri={zoho_redirect_uri}"
+    return redirect(zoho_oauth_url)
+
+@app.route('/auth/zoho/callback')
+def zoho_callback():
+    code = request.args.get('code')
+    client_id = os.environ.get('ZOHO_CLIENT_ID')
+    client_secret = os.environ.get('ZOHO_CLIENT_SECRET')
+    redirect_uri = os.environ.get('ZOHO_REDIRECT_URI')
+
+    # Make a request to get the access token
+    token_url = "https://accounts.zoho.com/oauth/v2/token"
+    token_data = {
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "grant_type": "authorization_code",
+        "redirect_uri": redirect_uri,
+        "code": code
+    }
+
+    response = requests.post(token_url, data=token_data)
+
+    if response.status_code == 200:
+        access_token = response.json()['access_token']
+        refresh_token = response.json()['refresh_token']
+
+        # Save access_token and refresh_token securely
+        os.environ['ZOHO_ACCESS_TOKEN'] = access_token
+        os.environ['ZOHO_REFRESH_TOKEN'] = refresh_token
+
+        return jsonify({"message": "OAuth Successful! You can now send data to Zoho CRM."})
+    else:
+        return jsonify({"error": "OAuth failed. Please try again."}), 400
+
 @app.route('/')
 def index():
     return render_template('index.html')
