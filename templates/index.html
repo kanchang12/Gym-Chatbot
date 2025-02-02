@@ -440,6 +440,40 @@ function toggleChat() {
     chatWindow.style.display = chatWindow.style.display === 'none' ? 'flex' : 'none';
 }
 
+function handleComplaintFlow(message) {
+    const chatMessages = document.getElementById('chatMessages');
+    
+    // Clear previous messages and embed form
+    const formHTML = `
+        <div style="width:100%; height:400px; margin-top:10px;">
+            <iframe 
+                src="https://forms.zohopublic.in/banglaygolpo1/form/ContactUs/formperma/tygGH6LFquRO7lGxeTjGLt7WjgEioGLQf2F6L6XKSPo"
+                style="width:100%; height:100%; border:none;"
+                allowfullscreen>
+            </iframe>
+        </div>
+    `;
+    
+    // Add a message and the form
+    addMessage("Please fill out the form below with your feedback:", 'bot');
+    const formContainer = document.createElement('div');
+    formContainer.innerHTML = formHTML;
+    chatMessages.appendChild(formContainer);
+    
+    // Scroll to show the form
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    // Reset complaint state
+    complaintState = {
+        active: false,
+        step: 0,
+        firstName: '',
+        lastName: '',
+        email: '',
+        message: ''
+    };
+}
+
 function sendMessage() {
     const chatInput = document.getElementById('chatInput');
     const message = chatInput.value.trim();
@@ -449,11 +483,6 @@ function sendMessage() {
     // Add user message
     addMessage(message, 'user');
     chatInput.value = '';
-
-    if (complaintState.active) {
-        handleComplaintFlow(message);
-        return;
-    }
 
     // Check for keywords
     const appointmentKeywords = ['appointment', 'schedule', 'book', 'meeting'];
@@ -469,8 +498,7 @@ function sendMessage() {
         document.getElementById('chatMessages').appendChild(appointmentButton);
     }
     else if (complaintKeywords.some(keyword => message.toLowerCase().includes(keyword))) {
-        complaintState.active = true;
-        addMessage("I'll help you submit your feedback. First, please tell me your first name:", 'bot');
+        handleComplaintFlow(message);
     }
     else {
         // Regular chat flow
@@ -485,37 +513,6 @@ function sendMessage() {
         .then(data => {
             addMessage(data.response, 'bot');
         });
-    }
-}
-
-function handleComplaintFlow(message) {
-    switch(complaintState.step) {
-        case 0:
-            complaintState.firstName = message;
-            complaintState.step++;
-            addMessage("Thank you! Now, please tell me your last name:", 'bot');
-            break;
-            
-        case 1:
-            complaintState.lastName = message;
-            complaintState.step++;
-            addMessage("Great! Please provide your email address:", 'bot');
-            break;
-            
-        case 2:
-            if (isValidEmail(message)) {
-                complaintState.email = message;
-                complaintState.step++;
-                addMessage("Perfect! Finally, please describe your feedback or concern:", 'bot');
-            } else {
-                addMessage("That doesn't look like a valid email address. Please try again:", 'bot');
-            }
-            break;
-            
-        case 3:
-            complaintState.message = message;
-            submitToZoho();
-            break;
     }
 }
 
