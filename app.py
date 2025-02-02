@@ -3,18 +3,22 @@ from openai import OpenAI
 import os
 import requests
 import re
+from datetime import datetime
 
 app = Flask(__name__)
 
-# Replace with your actual OpenAI API key
+# Configuration
 openai_api_key = os.environ.get("OPENAI_API_KEY")
 client = OpenAI(api_key=openai_api_key)
 
+# Zoho Forms Configuration
+ZOHO_FORMS_TOKEN = os.environ.get("ZOHO_FORMS_TOKEN")
+ZOHO_FORMS_BASE_URL = "https://forms.zoho.com/api/v1"
 zapier_webhook_url = os.environ.get("ZAPIER_WEBHOOK_URL")
 
 def get_bot_response(user_input):
     response = client.chat.completions.create(
-        model="gpt-4",  # You can choose a different model if needed
+        model="gpt-4",  
         messages=[{
             "role": "system",
             "content": """
@@ -48,9 +52,7 @@ def get_bot_response(user_input):
     )
     bot_response = response.choices[0].message.content
 
-   
-
-    # If user wants to schedule an appointment (detected by keywords in the bot response)
+    # If user wants to schedule an appointment
     if re.search(r"(book|schedule).*(appointment|meeting)", bot_response, re.IGNORECASE):
         calendar_button = '''
         <div>
@@ -62,23 +64,62 @@ def get_bot_response(user_input):
             </a>
         </div>
         '''
-        return calendar_button  # This will render the button in the frontend.
+        return bot_response + calendar_button
     
-    # If user wants to file a complaint (detected by complaint-related keywords in the bot response)
+    # If user wants to file a complaint
     complaint_match = re.search(r"(complaint|issue|problem|feedback)", bot_response, re.IGNORECASE)
     if complaint_match:
         complaint_form = '''
         <div>
-            <p>Please fill out the form below to lodge your complaint:</p>
-            <iframe aria-label='Contact Us' frameborder="0" style="height:500px;width:99%;border:none;" 
-                    src="https://forms.zohopublic.in/banglaygolpo1/form/ContactUs/formperma/tygGH6LFquRO7lGxeTjGLt7WjgEioGLQf2F6L6XKSPo">
-            </iframe>
+            <form id="complaintFormZoho" class="complaint-form">
+                <input type="text" placeholder="First Name" required id="firstName">
+                <input type="text" placeholder="Last Name" required id="lastName">
+                <input type="email" placeholder="Email" required id="email">
+                <textarea placeholder="Your Message" required id="message"></textarea>
+                <button type="submit" onclick="submitComplaintForm(event)">Submit</button>
+            </form>
         </div>
         '''
-        return complaint_form  # This will render the complaint form in the frontend.
+        return bot_response + complaint_form
     
-    # Default return if no match
     return bot_response
+
+@app.route('/submit-form', methods=['POST'])
+def submit_form():
+    try:
+        form_data = request.json
+        
+        # Prepare data for Zoho Forms API
+        headers = {
+            'Authorization': f'Zoho-oauthtoken {ZOHO_FORMS_TOKEN}',
+            'Content-Type': 'application/json'
+        }
+        
+        # Map your form data to Zoho Forms fields
+        zoho_data = {
+            'data': {
+                'Name_First': form_data.get('firstName', ''),
+                'Name_Last': form_data.get('lastName', ''),
+                'Email': form_data.get('email', ''),
+                'Message': form_data.get('message', ''),
+                'Submission_Date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
+        }
+        
+        # Send to Zoho Forms API
+        response = requests.post(
+            f"{ZOHO_FORMS_BASE_URL}/form/YOUR_FORM_ID/submissions",
+            headers=headers,
+            json=zoho_data
+        )
+        
+        if response.status_code == 200:
+            return jsonify({"success": True, "message": "Form submitted successfully"})
+        else:
+            return jsonify({"success": False, "message": "Failed to submit form"}), 400
+            
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
 
 @app.route('/')
 def index():
