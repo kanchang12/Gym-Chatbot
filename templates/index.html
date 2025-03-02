@@ -540,24 +540,6 @@ document.getElementById('chatInput').addEventListener('keypress', function(e) {
         sendMessage();
     }
 });
-</script>
-<div id="multipleai-chat-widget"></div>
-<script>
-  (function() {
-    var chatWidgetContainer = document.getElementById('multipleai-chat-widget');
-    var iframe = document.createElement('iframe');
-    iframe.src = 'https://familiar-bernie-onewebonly-45eb6d74.koyeb.app/'; // Your provided URL
-    iframe.style.width = '350px';
-    iframe.style.height = '450px';
-    iframe.style.border = 'none';
-    chatWidgetContainer.appendChild(iframe);
 
-    chatWidgetContainer.style.position = 'fixed';
-    chatWidgetContainer.style.bottom = '20px';
-    chatWidgetContainer.style.right = '20px';
-    chatWidgetContainer.style.zIndex = '1000';
-
-  })();
-</script>
 </body>
 </html>
